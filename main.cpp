@@ -1,6 +1,6 @@
 #include "Functions.hpp"
 #include <unistd.h>
-#include "/storage/emulated/0/my-project/src/Button.h"
+#include "Button.h"
 
 //~~~~~~~~~~~~~	std	~~~~~~~~~~~~~//
 
@@ -12,11 +12,7 @@ bool pf = false;
 std::vector<Node> openList;
 std::vector<Node> closedList;
 
-const std::string path = "/storage/emulated/0/Download/20 by 20 orthogonal maze.png";
-//const std::string path = "/storage/emulated/0/DCIM/Pixel Studio/maze_02.png";
-//const std::string path = "/storage/emulated/0/DCIM/Camera/maze_01.jpg";
-//const std::string path = "/storage/emulated/0/Pictures/maze - 03.png";
-//const std::string path = "/storage/emulated/0/Pictures/maze - 03 b.png";
+const std::string path; //here goes the image
 
 
 //~~~~~~~~~~~~~	sf	~~~~~~~~~~~~~//
