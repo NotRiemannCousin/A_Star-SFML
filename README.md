@@ -1,2 +1,2 @@
 # A_Star-SFML
-A* in sfml
+A* in SFML
