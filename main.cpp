@@ -40,7 +40,7 @@ int main()
 	//~~~~~~~~~~~~~	sf	~~~~~~~~~~~~~//
 
 	Font font;
-	if (!font.loadFromFile("/storage/emulated/0/my-project/src/arialceb.ttf"))
+	if (!font.loadFromFile("arialceb.ttf"))
 	{
 		fprintf(stderr, "Couldn't load font\n");
 		return EXIT_FAILURE;
