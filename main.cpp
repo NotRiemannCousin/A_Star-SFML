@@ -1,35 +1,32 @@
-#include "Functions.hpp"
+#include "functions.hpp"
 #include <unistd.h>
-#include "Button.h"
+#include "/storage/emulated/0/my-project/src/button.h"
 
 //~~~~~~~~~~~~~	std	~~~~~~~~~~~~~//
 
-
-int screenSizeX = 1080, screenSizeY = 2340, ci = 0;
+int screensizex = 1080, screensizey = 2340;
 
 bool pf = false;
 
-std::vector<Node> openList;
-std::vector<Node> closedList;
+std::vector<node> openlist;
+std::vector<node> closedlist;
 
-const std::string path; //here goes the image
-
+//const std::string path = "/storage/emulated/0/download/20 by 20 orthogonal maze.png";
+//const std::string path = "/storage/emulated/0/dcim/pixel studio/maze_02.png";
+//const std::string path = "/storage/emulated/0/dcim/camera/maze_01.jpg";
+//const std::string path = "/storage/emulated/0/pictures/maze - 03.png";
+//const std::string path = "/storage/emulated/0/pictures/maze - 03 b.png";
+const std::string path = "/storage/emulated/0/pictures/200x200 sigma maze - 04.png";
 
 //~~~~~~~~~~~~~	sf	~~~~~~~~~~~~~//
 
+vector2i end, init;
 
-Vector2i end, init;
-
-Touch touch;
-
-Node current;
-
-Color backgroundColor;
+node current;
 
 //~~~~~~~~~~~~~	functions	~~~~~~~~~~~~~//
 
-
-void pathfinder(Vector2i init, Vector2i end, Image *img, Text *t);
+void pathfinder(vector2i init, vector2i end, image *img, text *t);
 
 int main()
 {
@@ -39,62 +36,69 @@ int main()
 
 	//~~~~~~~~~~~~~	sf	~~~~~~~~~~~~~//
 
-	Font font;
-	if (!font.loadFromFile("arialceb.ttf"))
+	font font;
+	if (!font.loadfromfile("/storage/emulated/0/my-project/src/arialceb.ttf"))
 	{
-		fprintf(stderr, "Couldn't load font\n");
-		return EXIT_FAILURE;
+		fprintf(stderr, "couldn't load the font\n");
+		return exit_failure;
 	}
 
-	Image img;
-	if(!img.loadFromFile(path))
-		return EXIT_FAILURE; 
+	image img;
+	if (!img.loadfromfile(path))
+	{
+		
+		fprintf(stderr, "couldn't load the image\n");
+		return exit_failure;
+	}
 
-	Texture tex;
-	tex.loadFromImage(img);
+	texture tex;
+	tex.loadfromimage(img);
 
-	Sprite spr;
-	spr.setTexture(tex);
-	spr.setScale(screenSizeX / (float)img.getSize().x, screenSizeX / (float)img.getSize().x);
-	spr.setPosition(0, (screenSizeY - spr.getScale().y * img.getSize().y) / 2);
-	
-	Text t((char*) "", font, 70);
-	t.setFillColor(Color::White);
-	t.setPosition(Vector2f(0, spr.getGlobalBounds().top - t.getCharacterSize() * 1.3));
-	
+	sprite spr;
+	spr.settexture(tex);
+	spr.setscale(screensizex / (float)img.getsize().x, screensizex / (float)img.getsize().x);
+	spr.setposition(0, (screensizey - spr.getscale().y * img.getsize().y) / 2);
+
+	text t((char *)"", font, 70);
+	t.setfillcolor(color::white);
+	t.setposition(vector2f(0, spr.getglobalbounds().top - t.getcharactersize() * 1.3));
+
 	//~~~~~~~~~~~~~	me	~~~~~~~~~~~~~//
 
-	Button reset(font, (char*) "reset", 50, Vector2f(screenSizeX / 2 + 300, spr.getGlobalBounds().height + spr.getPosition().y + 50), 4.3), pause(font, (char*) "pause", 50, Vector2f(screenSizeX / 2 - 300, spr.getGlobalBounds().height + spr.getGlobalBounds().top + 50), 5);
+	button reset(font, (char *)"reset", 50, vector2f(screensizex / 2 + 300, spr.getglobalbounds().height + spr.getposition().y + 50), 4.3), pause(font, (char *)"pause", 50, vector2f(screensizex / 2 - 300, spr.getglobalbounds().height + spr.getglobalbounds().top + 50), 5);
+
+	closedlist.reserve(img.getsize().x * img.getsize().y);
+	openlist.reserve(img.getsize().x * img.getsize().y);
 
 	//////////////////////////////////////////
 	//~~~~~~~~~~~~~	loop	~~~~~~~~~~~~~//
 	//////////////////////////////////////////
 
-	RenderWindow window(VideoMode(1080, 2340), "sfml");
-	while (window.isOpen())
+	renderwindow window(videomode(1080, 2340), "sfml");
+	while (window.isopen())
 	{
 		////////////////////////////////////////////
 		//~~~~~~~~~~~~~	events	~~~~~~~~~~~~~//
 		////////////////////////////////////////////
 
-		Event e;
-		while (window.pollEvent(e))
+		event e;
+		while (window.pollevent(e))
 		{
 			switch (e.type)
 			{
-			case Event::Closed:
+			case event::closed:
 				window.close();
 				break;
-			case Event::TouchBegan:
+			case event::touchbegan:
 
-				if (spr.getGlobalBounds().contains(Touch::getPosition(0).x, Touch::getPosition(0).y))
+				if (spr.getglobalbounds().contains(touch::getposition(0).x, touch::getposition(0).y))
 				{
-					Vector2i pos = (Vector2i(touch.getPosition(0).x / spr.getScale().x, (touch.getPosition(0).y - spr.getGlobalBounds().top) / spr.getScale().y));
+					vector2i pos = (vector2i(touch::getposition(0).x / spr.getscale().x, (touch::getposition(0).y - spr.getglobalbounds().top) / spr.getscale().y));
 					if (index == 0)
 					{
-						if (compareColor(img.getPixel(pos.x, pos.y), Color(230, 230, 230)))
+						if (comparecolor(img.getpixel(pos.x, pos.y), color(230, 230, 230)))
 						{
-							img.setPixel(pos.x, pos.y, Color::Blue);
+							img.setpixel(pos.x, pos.y, color::blue);
 							tex.update(img);
 							init = pos;
 							index++;
@@ -102,56 +106,44 @@ int main()
 					}
 					else if (index == 1)
 					{
-						if (compareColor(img.getPixel(pos.x, pos.y), Color(230, 230, 230)))
+						if (comparecolor(img.getpixel(pos.x, pos.y), color(230, 230, 230)))
 						{
-							img.setPixel(pos.x, pos.y, Color(230, 230, 230));
+							img.setpixel(pos.x, pos.y, color(230, 230, 230));
 							tex.update(img);
 							end = pos;
 							index++;
 
 							pf = true;
-							current = Node(init, init, sqrt(pow(init.x - end.x, 2)) + sqrt(pow(init.y - end.y, 2)), 0);
+
+							current(init, null, dist(init, end), 0);
+
+							openlist.push_back(current);
 						}
 					}
 				}
 
 				for (int i = 0; i < 3; i++)
 				{
-					if (pause.box.getGlobalBounds().contains(Vector2f(touch.getPosition(i))))
+					if (pause.box.getglobalbounds().contains(vector2f(touch::getposition(i))))
 					{
 						pf = !pf;
 						break;
 					}
-					if (reset.box.getGlobalBounds().contains(Vector2f(touch.getPosition(i))))
+					if (reset.box.getglobalbounds().contains(vector2f(touch::getposition(i))))
 					{
-						img.loadFromFile(path);
+						if (index == 0)
+							window.close();
+
+						img.loadfromfile(path);
 						tex.update(img);
 						pf = false;
 						index = 0;
-						openList.clear();
-						closedList.clear();
+						openlist.clear();
+						closedlist.clear();
 
 						break;
 					}
 				}
-
-				/*pause.click(touch, []() mutable -> void{ 
-					pf = !pf;
-				});*/
-				/*pause.click(touch, [](){
-					log_f("", log_file);
-				});*/
-				/*reset.click(touch, [&img, &tex, path, &pf, &index, &openList, &closedList](){
-					button::reset(&img, &tex, path, &pf, &index, &openList, &closedList);
-				};*/
-
-				break;
-			case Event::TouchMoved:
-				while (Touch::isDown(1))
-				{
-				}
-				break;
-			case Event::TouchEnded:
 				break;
 			}
 		}
@@ -162,59 +154,55 @@ int main()
 
 		if (pf)
 		{
-			if (current.getNode() != end)
+			if (current.getnode() != end)
 			{
-				for (int i = 0; i < 450; i++)
+				for (int i = 0; i < 1050; i++)
+				//while(current.getnode() != end)
 				{
-					if (current.getNode() != end)
-					{
+					if (current.getnode() != end)
 						pathfinder(init, end, &img, &t);
-
-						//usleep(1000000);
-					}
 					else
-					{
 						break;
+
+					//usleep(10000);
+
+					if (openlist.empty()){
+						pf = false;
+				img.setpixel(init.x, init.y, color::blue);
+				img.setpixel(end.x, end.y, color(150, 5, 5));
+				break;
 					}
 				}
-				t.setString(std::to_string(closedList.size()));
-				
-				/*for (int i = 0; i < closedList.size(); i++)
-				{
-					img.setPixel(closedList[i].getNode().x, closedList[i].getNode().y, Color::Red);
-				}*/
-				
+				t.setstring(std::to_string(current.getnode().x) + ", " + std::to_string(current.getnode().y));
 			}
 			else
 			{
-				for (int i = 0; i < openList.size(); i++)
+				for (int i = 0; i < openlist.size(); i++)
 				{
-					img.setPixel(openList[i].getNode().x, openList[i].getNode().y, Color::White);
+					img.setpixel(openlist[i].getnode().x, openlist[i].getnode().y, color::white);
 				}
-				for (int i = 0; i < closedList.size(); i++)
+				for (int i = 0; i < closedlist.size(); i++)
 				{
-					img.setPixel(closedList[i].getNode().x, closedList[i].getNode().y, Color::White);
+					img.setpixel(closedlist[i].getnode().x, closedlist[i].getnode().y, color::white);
 				}
-				
-				openList.clear();
+				openlist.clear();
 				int count = 0;
-				
-				Node *act = &closedList.back();
-				while (act->getPointer() != init)
+
+				node *act = &closedlist.back();
+				while (act->getpointer() != null)
 				{
-					img.setPixel(act->getNode().x, act->getNode().y, Color::Red);
-					act = search(closedList, act->getPointer());
+					img.setpixel(act->getnode().x, act->getnode().y, color::red);
+					act = act->getpointer();
 					count++;
 				}
 				
-				img.setPixel(act->getNode().x, act->getNode().y, Color::Red);
-				
-				img.setPixel(end.x, end.y, Color::Blue);
-				img.setPixel(init.x, init.y, Color(150, 5, 5));
+				img.setpixel(init.x, init.y, color::blue);
+				img.setpixel(end.x, end.y, color(150, 5, 5));
 				pf = false;
-				img.saveToFile("/storage/emulated/0/log/maze.png");
-				
-				t.setString(std::to_string(closedList.size()) + " - " + std::to_string(count));
+				img.savetofile("/storage/emulated/0/log/maze.png");
+
+				t.setstring(std::to_string(closedlist.size()) + " - " + std::to_string(count));
+				closedlist.clear();
 			}
 			tex.update(img);
 		}
@@ -223,7 +211,7 @@ int main()
 		//~~~~~~~~~~~~~	window display	~~~~~~~~~~~~~//
 		////////////////////////////////////////////////////
 
-		window.clear(backgroundColor);
+		window.clear(color(25, 25, 25));
 		window.draw(spr);
 		window.draw(t);
 		reset.draw(window);
@@ -236,191 +224,194 @@ int main()
 //~~~~~~~~~~~~~	pathfinder function	~~~~~~~~~~~~~//
 /////////////////////////////////////////////////////////
 
-void pathfinder(Vector2i init, Vector2i end, Image *img, Text *t)
+void pathfinder(vector2i init, vector2i end, image *img, text *t)
 {
-	std::vector<Node> li;
-	Node *act;
+	if (openlist.empty() && !closedlist.empty())
+		return;
+
+	std::vector<node> li;
+	li.reserve(8);
+	node *act;
+
+	current = openlist.back();
+	openlist.pop_back();
+
+	closedlist.emplace_back(current);
 
 	///////////////////////////////////////////////////
 	//~~~~~~~~~~~~~	pixel checker	~~~~~~~~~~~~~//
 	///////////////////////////////////////////////////
 
 	{
-		Vector2i past, _cur = current.getNode();
-		
+		vector2i past, _cur = current.getnode();
+
 		//~~~~~~~~~~~~~	perpendicular	~~~~~~~~~~~~~//
-		
-		
-		
-		past = _cur + Vector2i(0, 1);
-		
-		//t->setString(std::is_null_pointer<Node> cur);
-		if (compareColor(img->getPixel(past.x, past.y), Color(100, 225, 225)))
-		{
-			act = search(openList, past);
-			if (act == NULL)
-			{
-				if (past.y < img->getSize().y)
-				{
-					li.push_back(Node(past, _cur, dist(past, end) * 10, current.getG() + 10));
-				}
-			}
-			else
-			{
-				if (act->getG() > current.getG() + 10)
-				{
-					act->update(_cur, current.getG() + 10);
-				}
-			}
-		}
-	
-		past = _cur + Vector2i(0, -1);
 
-		if (compareColor(img->getPixel(past.x, past.y), Color(100, 225, 225)))
-		{
-			act = search(openList, past);
-			if (act == NULL)
-			{
-				if (past.y > 0)
-				{
-					li.push_back(Node(past, _cur, dist(past, end) * 10, current.getG() + 10));
-				}
-			}
-			else
-			{
-				if (act->getG() > current.getG() + 10)
-				{
-					act->update(_cur, current.getG() + 10);
-				}
-			}
-		}
-	
-		
-		past = _cur + Vector2i(1, 0);
+		past = _cur + vector2i(0, 1);
 
-		if (compareColor(img->getPixel(past.x, past.y), Color(100, 225, 225)))
+		if (past.y < img->getsize().y)
 		{
-			act = search(openList, past);
-			if (act == NULL)
+			if (comparecolor(img->getpixel(past.x, past.y), color(100, 150, 150)))
 			{
-				if (past.x < img->getSize().x)
+				act = search(openlist, past);
+				if (act == null)
 				{
-					li.push_back(Node(past, _cur, dist(past, end) * 10, current.getG() + 10));
+					li.emplace_back(past, closedlist.back(), dist(past, end) * 10, current.getg() + 10);
 				}
-			}
-			else
-			{
-				if (act->getG() > current.getG() + 10)
+				else
 				{
-					act->update(_cur, current.getG() + 10);
+					if (act->getg() > current.getg() + 10)
+					{
+						act->update(closedlist.back(), current.getg() + 10);
+					}
 				}
 			}
 		}
 
-		past = _cur + Vector2i(-1, 0);
+		past = _cur + vector2i(0, -1);
 
-		if (compareColor(img->getPixel(past.x, past.y), Color(100, 225, 225)))
+		if (past.y >= 0)
 		{
-			act = search(openList, past);
-			if (act == NULL)
+			if (comparecolor(img->getpixel(past.x, past.y), color(100, 150, 150)))
 			{
-				if (past.x > 0)
+				act = search(openlist, past);
+				if (act == null)
 				{
-					li.push_back(Node(past, _cur, dist(past, end) * 10, current.getG() + 10));
+					li.emplace_back(past, closedlist.back(), dist(past, end) * 10, current.getg() + 10);
 				}
-			}
-			else
-			{
-				if (act->getG() > current.getG() + 10)
+				else
 				{
-					act->update(_cur, current.getG() + 10);
+					if (act->getg() > current.getg() + 10)
+					{
+						act->update(closedlist.back(), current.getg() + 10);
+					}
 				}
 			}
 		}
-		
-		
+
+		past = _cur + vector2i(1, 0);
+
+		if (past.x < img->getsize().x)
+		{
+			if (comparecolor(img->getpixel(past.x, past.y), color(100, 150, 150)))
+			{
+				act = search(openlist, past);
+				if (act == null)
+				{
+					li.emplace_back(past, closedlist.back(), dist(past, end) * 10, current.getg() + 10);
+				}
+				else
+				{
+					if (act->getg() > current.getg() + 10)
+					{
+						act->update(closedlist.back(), current.getg() + 10);
+					}
+				}
+			}
+		}
+
+		past = _cur + vector2i(-1, 0);
+
+		if (past.x > -1)
+		{
+			if (comparecolor(img->getpixel(past.x, past.y), color(100, 150, 150)))
+			{
+				act = search(openlist, past);
+				if (act == null)
+				{
+					li.emplace_back(past, closedlist.back(), dist(past, end) * 10, current.getg() + 10);
+				}
+				else
+				{
+					if (act->getg() > current.getg() + 10)
+					{
+						act->update(closedlist.back(), current.getg() + 10);
+					}
+				}
+			}
+		}
+
 		//~~~~~~~~~~~~~	diagonal	~~~~~~~~~~~~~//
 
-		
-		
-		past = _cur + Vector2i(1, 1);
-		if (compareColor(img->getPixel(past.x, past.y), Color(100, 225, 225)))
+		past = _cur + vector2i(1, 1);
+
+		if ((past.x < img->getsize().x) && (past.y < img->getsize().y))
 		{
-			act = search(openList, past);
-			if (act == NULL)
+			if (comparecolor(img->getpixel(past.x, past.y), color(100, 150, 150)))
 			{
-				if ((past.x < img->getSize().x) && (past.y < img->getSize().y))
+				act = search(openlist, past);
+				if (act == null)
 				{
-					li.push_back(Node(past, _cur, dist(past, end) * 10, current.getG() + 14));
+					li.emplace_back(past, closedlist.back(), dist(past, end) * 10, current.getg() + 14);
 				}
-			}
-			else
-			{
-				if (act->getG() > current.getG() + 10)
+				else
 				{
-					act->update(_cur, current.getG() + 10);
+					if (act->getg() > current.getg() + 10)
+					{
+						act->update(closedlist.back(), current.getg() + 10);
+					}
 				}
 			}
 		}
-		past = _cur + Vector2i(-1, -1);
+		past = _cur + vector2i(-1, -1);
 
-		if (compareColor(img->getPixel(past.x, past.y), Color(100, 225, 225)))
+		if ((past.x > -1) && (past.y > -1))
 		{
-			act = search(openList, past);
-			if (act == NULL)
+			if (comparecolor(img->getpixel(past.x, past.y), color(100, 150, 150)))
 			{
-				if ((past.x > 0) && (past.y > 0))
+				act = search(openlist, past);
+				if (act == null)
 				{
-					li.push_back(Node(past, _cur, dist(past, end) * 10, current.getG() + 14));
+					li.emplace_back(past, closedlist.back(), dist(past, end) * 10, current.getg() + 14);
 				}
-			}
-			else
-			{
-				if (act->getG() > current.getG() + 10)
+				else
 				{
-					act->update(_cur, current.getG() + 10);
-				}
-			}
-		}
-
-		past = _cur + Vector2i(1, -1);
-
-		if (compareColor(img->getPixel(past.x, past.y), Color(100, 225, 225)))
-		{
-			act = search(openList, past);
-			if (act == NULL)
-			{
-				if ((past.x < img->getSize().x) && (past.y > 0))
-				{
-					li.push_back(Node(past, _cur, dist(past, end) * 10, current.getG() + 14));
-				}
-			}
-			else
-			{
-				if (act->getG() > current.getG() + 10)
-				{
-					act->update(_cur, current.getG() + 10);
+					if (act->getg() > current.getg() + 10)
+					{
+						act->update(closedlist.back(), current.getg() + 10);
+					}
 				}
 			}
 		}
 
-		past = _cur + Vector2i(-1, 1);
+		past = _cur + vector2i(1, -1);
 
-		if (compareColor(img->getPixel(past.x, past.y), Color(100, 225, 225)))
+		if ((past.x < img->getsize().x) && (past.y > -1))
 		{
-			act = search(openList, past);
-			if (act == NULL)
+			if (comparecolor(img->getpixel(past.x, past.y), color(100, 150, 150)))
 			{
-				if ((past.x > 0) && (past.y < img->getSize().y))
+				act = search(openlist, past);
+				if (act == null)
 				{
-					li.push_back(Node(past, _cur, dist(past, end) * 10, current.getG() + 14));
+					li.emplace_back(past, closedlist.back(), dist(past, end) * 10, current.getg() + 14);
+				}
+				else
+				{
+					if (act->getg() > current.getg() + 10)
+					{
+						act->update(closedlist.back(), current.getg() + 10);
+					}
 				}
 			}
-			else
+		}
+
+		past = _cur + vector2i(-1, 1);
+
+		if ((past.x > -1) && (past.y < img->getsize().y))
+		{
+			if (comparecolor(img->getpixel(past.x, past.y), color(100, 150, 150)))
 			{
-				if (act->getG() > current.getG() + 10)
+				act = search(openlist, past);
+				if (act == null)
 				{
-					act->update(_cur, current.getG() + 10);
+					li.emplace_back(past, closedlist.back(), dist(past, end) * 10, current.getg() + 14);
+				}
+				else
+				{
+					if (act->getg() > current.getg() + 10)
+					{
+						act->update(closedlist.back(), current.getg() + 10);
+					}
 				}
 			}
 		}
@@ -429,35 +420,22 @@ void pathfinder(Vector2i init, Vector2i end, Image *img, Text *t)
 	/////////////////////////////////////////////////
 	//~~~~~~~~~~~~~	paint pixel	~~~~~~~~~~~~~//
 	/////////////////////////////////////////////////
-	
-	for (auto k : li)
-	{
-		openList.push_back(k);
 
-		img->setPixel(k.getNode().x, k.getNode().y, Color(200, 255, 200));
+	for (node &k : li)
+	{
+		openlist.emplace_back(k);
+		img->setpixel(k.getnode().x, k.getnode().y, color(200, 255, 200));
 	}
 	li.clear();
+	
+	img->setpixel(closedlist.back().getnode().x, closedlist.back().getnode().y, color(155, 90, 90));
 
-	if (!closedList.empty())
-	{
-		img->setPixel(closedList.back().getNode().x, closedList.back().getNode().y, Color(155, 90, 90));
-	}
-
-	std::sort(openList.begin(), openList.end(), [end](Node a, Node b) {
-		if (a.getF() != b.getF())
-		{
-			return a.getF() > b.getF();
-		}
+	std::sort(openlist.begin(), openlist.end(), [](node &a, node &b) {
+		if (a.getf() != b.getf())
+			return a.getf() > b.getf();
 		else
-		{
-			return dist(a.getNode(), end) > dist(b.getNode(), end);
-		}
+			return a.getg() > b.getg();
 	});
-	
-	img->setPixel(current.getNode().x, current.getNode().y, Color(230, 15, 15));
 
-	current = openList.back();
-	openList.pop_back();
-	
-	closedList.push_back(current);
+	img->setpixel(current.getnode().x, current.getnode().y, color(230, 5, 5));
 }
