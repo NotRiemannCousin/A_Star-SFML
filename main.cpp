@@ -1,6 +1,8 @@
 #include "functions.hpp"
 #include <unistd.h>
-#include "/storage/emulated/0/my-project/src/button.h"
+#include "button.h"
+
+// For Mobile devices
 
 //~~~~~~~~~~~~~	std	~~~~~~~~~~~~~//
 
@@ -11,12 +13,12 @@ bool pf = false;
 std::vector<node> openlist;
 std::vector<node> closedlist;
 
-//const std::string path = "/storage/emulated/0/download/20 by 20 orthogonal maze.png";
-//const std::string path = "/storage/emulated/0/dcim/pixel studio/maze_02.png";
-//const std::string path = "/storage/emulated/0/dcim/camera/maze_01.jpg";
-//const std::string path = "/storage/emulated/0/pictures/maze - 03.png";
-//const std::string path = "/storage/emulated/0/pictures/maze - 03 b.png";
-const std::string path = "/storage/emulated/0/pictures/200x200 sigma maze - 04.png";
+//std::string path = "images/20 by 20 orthogonal maze.png";
+//std::string path = "images/pixel studio/maze_02.png";
+//std::string path = "images/maze_01.jpg";
+//std::string path = "images/maze - 03.png";
+//std::string path = "images/maze - 03 b.png";
+std::string path = "images/200x200 sigma maze - 04.png";
 
 //~~~~~~~~~~~~~	sf	~~~~~~~~~~~~~//
 
@@ -37,7 +39,7 @@ int main()
 	//~~~~~~~~~~~~~	sf	~~~~~~~~~~~~~//
 
 	font font;
-	if (!font.loadfromfile("/storage/emulated/0/my-project/src/arialceb.ttf"))
+	if (!font.loadfromfile("arialceb.ttf"))
 	{
 		fprintf(stderr, "couldn't load the font\n");
 		return exit_failure;
