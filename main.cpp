@@ -13,12 +13,7 @@ bool pf = false;
 std::vector<node> openlist;
 std::vector<node> closedlist;
 
-//std::string path = "images/20 by 20 orthogonal maze.png";
-//std::string path = "images/pixel studio/maze_02.png";
-//std::string path = "images/maze_01.jpg";
-//std::string path = "images/maze - 03.png";
-//std::string path = "images/maze - 03 b.png";
-std::string path = "images/200x200 sigma maze - 04.png";
+std::string path = "200x200 sigma maze - 04.png";
 
 //~~~~~~~~~~~~~	sf	~~~~~~~~~~~~~//
 
